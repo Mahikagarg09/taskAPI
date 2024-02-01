@@ -32,7 +32,6 @@ router.get('/:userId/subtasks', async (req, res) => {
   try {
     const userId = req.params.userId;
     const task_id = req.query.task_id; // Extract task_id from query string
-
     // Check if the user exists
     const user = await User.findById(userId);
     if (!user) {
@@ -51,11 +50,13 @@ router.get('/:userId/subtasks', async (req, res) => {
     // Fetch subtasks for each task
     // const allSubtasks = [];
     for (const task of tasks) {
-      const subtasks = await Subtask.find({ task_id: task.task_id });
+      // const subtasks = await Subtask.find({ task_id: task.task_id });
+      const filters ={deleted_at: null, task_id: task.task_id}
       // allSubtasks.push(
       //   subtasks,
       // );
-      res.json(subtasks);
+      const filteredTasks = await Subtask.find(filters);
+      res.json(filteredTasks);
     }
 
     // res.json(subtasks);
@@ -101,6 +102,25 @@ router.put('/:subtaskId', async (req, res) => {
   }
 });
 
-module.exports = router;
+router.delete('/:subtaskId', async (req, res) => {
+  try {
+    const subtaskId = req.params.subtaskId;
+
+    // Check if the subtask exists
+    const subtask = await Subtask.findById(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({ message: 'Subtask not found' });
+    }
+
+    // Update subtask's deleted_on field to today's date
+    subtask.deleted_at = new Date();
+    const updatedSubtask = await subtask.save();
+    res.json({ message: 'Subtask deleted successfully', subtask: updatedSubtask });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;
