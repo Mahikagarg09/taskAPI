@@ -167,7 +167,7 @@ async function initiateCall(user) {
     const call = await client.calls.create({
       url: 'http://demo.twilio.com/docs/voice.xml',
       to: user.phone,
-      // from: phone, // Your Twilio phone number
+      from: phone, // Your Twilio phone number
     });
 
     console.log(`Call initiated to ${user.email}, SID: ${call.sid}`);
