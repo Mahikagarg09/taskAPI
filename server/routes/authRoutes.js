@@ -1,7 +1,9 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const User = require('../models/userModel'); // Import the User model
+const Task = require('../models/taskModel');
 
 const secretKey = "secret";
 
@@ -47,13 +49,35 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create a new user
+    // Calculate priority based on existing users
+    const usersCount = await User.countDocuments();
+    const priority = usersCount + 1;
+
+    // Create a new user with priority
     const newUser = new User({
       email,
       password,
       phone,
+      priority,
     });
 
+    await newUser.save();
+
+    // Create a tasks database for the new user
+    const tasksDBName = `${newUser._id}tasks`;
+    const tasksDB = mongoose.createConnection(`mongodb://localhost/${tasksDBName}`, { useNewUrlParser: true });
+
+    // Create a task for the user (just an example)
+    const newTask = new Task({
+      title: 'Example Task',
+      description: 'This is an example task.',
+      due_date: new Date(),
+      priority: 1,
+    });
+
+    // Save the task to the tasks database
+    await newTask.save();
+    newUser.tasks.push(newTask._id);
     await newUser.save();
 
     res.status(201).json({ message: 'User registered successfully' });
