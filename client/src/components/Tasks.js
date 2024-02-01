@@ -5,6 +5,8 @@ import TaskList from './TaskList';
 
 const Tasks = () => {
   const [newtask, createnewTask] = useState(false);
+  const [tasks, setTasks] = useState([]);
+
   const [task, setTask] = useState({
     task_id: '',
     title: '',
@@ -29,6 +31,7 @@ const Tasks = () => {
     try {
       const response = await axios.post('http://localhost:3000/api/tasks', taskWithUserId);
       console.log('Task submitted:', response.data);
+      setTasks((prevTasks) => [...prevTasks, response.data]);
 
       // setTasks((prevTasks) => [...prevTasks, response.data]);
     } catch (error) {
@@ -124,7 +127,7 @@ const Tasks = () => {
           </button>
         </div>
       )}
-      <TaskList />
+      <TaskList tasks={tasks} setTasks={setTasks}/>
     </div>
   );
 };

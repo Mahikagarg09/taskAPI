@@ -2,26 +2,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const TaskList = () => {
+const TaskList = ({ tasks, setTasks }) => {
     const [editableTaskId, setEditableTaskId] = useState(null);
     const [originalTasks, setOriginalTasks] = useState([]);
-    const [tasks, setTasks] = useState([]);
 
     // Fetch tasks with useEffect
     useEffect(() => {
         const fetchTasks = async () => {
-            try {
-                const userId = localStorage.getItem('userId');
-                const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
-                setTasks(response.data);
-                setOriginalTasks(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+          try {
+            const userId = localStorage.getItem('userId');
+            const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
+            setTasks(response.data);
+            setOriginalTasks(response.data);
+          } catch (error) {
+            console.error(error);
+          }
         };
-
+    
         fetchTasks();
-    }, []); // Empty dependency array ensures it runs only once on mount
+      }, [setTasks]);// Empty dependency array ensures it runs only once on mount
 
     const handleEditClick = (taskId) => {
         console.log(taskId)
