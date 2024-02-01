@@ -24,6 +24,26 @@ const Tasks = () => {
     }
   };
 
+  const handleUpdate = async (taskId, currentDueDate, currentStatus) => {
+    const newDueDate = prompt('Enter new due date:', currentDueDate) || currentDueDate;
+    const newStatus = prompt('Enter new status:', currentStatus) || currentStatus;
+
+    try {
+      const response = await axios.put(`http://localhost:3000/api/tasks/${taskId}`, {
+        due_date: newDueDate,
+        status: newStatus,
+      });
+
+      // Update the local state with the updated task
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task._id === taskId ? response.data : task))
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -140,7 +160,7 @@ const Tasks = () => {
           </button>
         </div>
       )}
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} onUpdate={handleUpdate} />
     </div>
   );
 };
