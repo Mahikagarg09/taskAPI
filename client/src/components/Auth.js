@@ -35,6 +35,7 @@ export default function Auth({setAuthenticated}) {
                 setMessage(data.message);
                 setAuthenticated(true);
                 localStorage.setItem("token",data.token)
+                localStorage.setItem("userId",data.user._id)
                 // Clear form data after successful submission
                 setFormData({ email: '', password: '', phone: '' });
             } else {

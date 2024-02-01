@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const User = require('../models/userModel'); // Import the User model
-const Task = require('../models/taskModel');
+
 
 const secretKey = "secret";
 
@@ -29,54 +29,30 @@ router.post('/register', async (req, res) => {
     const priority = usersCount + 1;
 
     // Create a new user with priority
-    const newUser = new User({
+    const user = new User({
       email,
       password,
       phone,
       priority,
     });
 
-    await newUser.save();
-    jwt.sign({ newUser }, secretKey, { expiresIn: '1h' }, (err, token) => {
+    await user.save();
+
+    // Sign JWT token for the new user
+    jwt.sign({ user }, secretKey, { expiresIn: '1h' }, (err, token) => {
       if (err) {
-        res.status(500).json({ message: 'Internal Server Error' });
-      } else {
-        // Set the token in the response header
-        res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
-        res.status(200).json({ message: 'Login successful', token });
+        return res.status(500).json({ message: 'Internal Server Error' });
       }
+
+      // Set the token in the response header
+      res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+      res.status(201).json({ message: 'Login successful', token,user });
     });
-    res.status(201).json({ message: 'User registered successfully'});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
-router.get('/', (req, res) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    // If no token, redirect to the login page
-    res.status(401).json({message:"token not present"})
-  }
-
-  // Verify the token
-  jwt.verify(token, secretKey, (err, decoded) => {
-    if (err) {
-      // If token verification fails, redirect to the login page
-      res.status(401).json({message:"token not verfied"})
-    }
-
-    // Token is valid, you can proceed with rendering the main route or performing other actions
-    // For example, you can extract user information from the decoded token
-    const userEmail = decoded.user.email;
-
-    // Render or send a response for authenticated users
-    res.send(`Welcome, ${userEmail}! This is the main route.`);
-  });
-});
-
 
 
 router.post('/login', async (req, res) => {
@@ -98,7 +74,7 @@ router.post('/login', async (req, res) => {
       } else {
         // Set the token in the response header
         res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', token ,user});
       }
     });
 

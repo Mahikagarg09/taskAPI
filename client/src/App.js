@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Auth from './components/Auth';
 import Tasks from './components/Tasks';
@@ -6,7 +6,7 @@ import Tasks from './components/Tasks';
 const App = () => {
 
   const[authenticated,setAuthenticated] = useState(localStorage.getItem('token'));
-
+  
   return (
     <div>
       <Router>
