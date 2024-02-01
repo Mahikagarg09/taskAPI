@@ -9,22 +9,6 @@ const TaskList = ({ tasks, setTasks }) => {
     const [showSubtask, setShowSubtask] = useState(null)
     const [dueDateFilter, setDueDateFilter] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
-
-    // Fetch tasks with useEffect
-    // useEffect(() => {
-    //     const fetchTasks = async () => {
-    //         try {
-    //             const userId = localStorage.getItem('userId');
-    //             const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
-    //             setTasks(response.data);
-    //             setOriginalTasks(response.data);
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     };
-
-    //     fetchTasks();
-    // }, [setTasks]);// Empty dependency array ensures it runs only once on mount
     useEffect(() => {
         const fetchTasks = async () => {
             try {
