@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-export default function Auth() {
-    const navigate = useNavigate();
+export default function Auth({setAuthenticated}) {
     const [showSignUp, setShowSignUp] = useState(false);
     const [message, setMessage] = useState(null);
     const [formData, setFormData] = useState({
@@ -35,6 +33,7 @@ export default function Auth() {
             const data = response.data;
             if (response.status === 200 || response.status === 201) {
                 setMessage(data.message);
+                setAuthenticated(true);
                 // Clear form data after successful submission
                 setFormData({ email: '', password: '', phone: '' });
             } else {
