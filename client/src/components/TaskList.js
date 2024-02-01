@@ -11,11 +11,38 @@ const TaskList = ({ tasks, setTasks }) => {
     const [priorityFilter, setPriorityFilter] = useState('');
 
     // Fetch tasks with useEffect
+    // useEffect(() => {
+    //     const fetchTasks = async () => {
+    //         try {
+    //             const userId = localStorage.getItem('userId');
+    //             const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
+    //             setTasks(response.data);
+    //             setOriginalTasks(response.data);
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     };
+
+    //     fetchTasks();
+    // }, [setTasks]);// Empty dependency array ensures it runs only once on mount
     useEffect(() => {
         const fetchTasks = async () => {
             try {
                 const userId = localStorage.getItem('userId');
-                const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
+
+                // Build query parameters based on filters
+                const queryParams = {};
+                if (dueDateFilter) {
+                    queryParams.due_date = dueDateFilter;
+                }
+                if (priorityFilter) {
+                    queryParams.priority = priorityFilter;
+                }
+
+                const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`, {
+                    params: queryParams,
+                });
+
                 setTasks(response.data);
                 setOriginalTasks(response.data);
             } catch (error) {
@@ -24,7 +51,7 @@ const TaskList = ({ tasks, setTasks }) => {
         };
 
         fetchTasks();
-    }, [setTasks]);// Empty dependency array ensures it runs only once on mount
+    }, [setTasks, dueDateFilter, priorityFilter]);
 
     const handleEditClick = (taskId) => {
         console.log(taskId)

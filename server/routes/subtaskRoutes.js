@@ -4,7 +4,7 @@ const Subtask = require('../models/subtaskModel');
 const Task = require('../models/taskModel');
 const User = require('../models/userModel');
 
-// Example route: Create a new subtask
+// Create a new subtask
 router.post('/', async (req, res) => {
   try {
     const { title, task_id} = req.body;
@@ -46,15 +46,8 @@ router.get('/:userId/subtasks', async (req, res) => {
       // Otherwise, fetch all tasks for the user
       tasks = await Task.find({ user: userId });
     }
-
-    // Fetch subtasks for each task
-    // const allSubtasks = [];
     for (const task of tasks) {
-      // const subtasks = await Subtask.find({ task_id: task.task_id });
       const filters ={deleted_at: null, task_id: task.task_id}
-      // allSubtasks.push(
-      //   subtasks,
-      // );
       const filteredTasks = await Subtask.find(filters);
       res.json(filteredTasks);
     }
