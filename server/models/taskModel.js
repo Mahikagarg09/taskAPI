@@ -7,7 +7,7 @@ const taskSchema = new mongoose.Schema({
   due_date: { type: Date, required: true },
   priority: { type: Number, required: true },
   status: { type: String, enum: ['TODO', 'IN_PROGRESS', 'DONE'], default: 'TODO' },
-  deleted_at: { type: Date },
+  deleted_at: { type: Date, default: null },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to User model
 }, { timestamps: true });
 

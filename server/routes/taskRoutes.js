@@ -57,7 +57,7 @@ router.get('/:userId/tasks', async (req, res) => {
     const { priority, due_date } = req.query;
 
     // Build a filter object based on provided parameters
-    const filters = { user: userId };
+    const filters = { user: userId , deleted_at: null  };
     if (priority) {
       filters.priority = priority;
     }
@@ -110,7 +110,7 @@ router.put('/:taskId', async (req, res) => {
     } else {
       task.priority = 3; // Due date is 5+ days from now
     }
-    
+
     const updatedTask = await task.save();
 
     // If the status is changed to "DONE," update subtasks' status to 1
@@ -129,5 +129,28 @@ router.put('/:taskId', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+router.delete('/:taskId', async (req, res) => {
+  const { taskId } = req.params;
+
+  try {
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      { deleted_at: new Date() },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    return res.json(task);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+module.exports = router;
 
 module.exports = router;

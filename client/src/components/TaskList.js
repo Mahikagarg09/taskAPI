@@ -66,6 +66,22 @@ const TaskList = ({ tasks, setTasks }) => {
             )
         );
     };
+    
+    const handleDeleteClick = async (taskId) => {
+        try {
+            // Make a DELETE request to delete the task on the server
+            await axios.delete(`http://localhost:3000/api/tasks/${taskId}`);
+
+            // Update the local state to remove the deleted task
+            setTasks((prevTasks) =>
+                prevTasks.filter((task) => task._id !== taskId)
+            );
+
+            setEditableTaskId(null); // Reset the editable task ID
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <div className="container mx-auto my-8 px-10">
@@ -140,7 +156,7 @@ const TaskList = ({ tasks, setTasks }) => {
                                             Update
                                         </button>
                                         <button
-                                            // onClick={() => handleDeleteClick(task._id)}
+                                            onClick={() => handleDeleteClick(task._id)}
                                             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300 mr-2"
                                         >
                                             Delete
