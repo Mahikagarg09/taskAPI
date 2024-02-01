@@ -1,11 +1,11 @@
 // Tasks.js
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import TaskList from './TaskList';
 
 const Tasks = () => {
   const [newtask, createnewTask] = useState(false);
-  const[newsubtask, createnewSubTask] = useState(false);
+  const [newsubtask, createnewSubTask] = useState(false);
   const [tasks, setTasks] = useState([]);
 
   const [task, setTask] = useState({
@@ -15,10 +15,23 @@ const Tasks = () => {
     due_date: '',
   });
 
+  const [subtasks, setSubTask] = useState({
+    task_id: '',
+    title: '',
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTask((prevTask) => ({
       ...prevTask,
+      [name]: value,
+    }));
+  };
+
+  const handleChangesubTask = (e) => {
+    const { name, value } = e.target;
+    setSubTask((prevsubTask) => ({
+      ...prevsubTask,
       [name]: value,
     }));
   };
@@ -34,7 +47,6 @@ const Tasks = () => {
       console.log('Task submitted:', response.data);
       setTasks((prevTasks) => [...prevTasks, response.data]);
 
-      // setTasks((prevTasks) => [...prevTasks, response.data]);
     } catch (error) {
       console.error(error);
     }
@@ -46,6 +58,23 @@ const Tasks = () => {
       due_date: '',
     });
     createnewTask(false);
+  };
+
+  const handleSubtaskSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/subtasks', subtasks);
+      console.log('Task submitted:', response.data);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setSubTask({
+      task_id: '',
+      title: '',
+    });
+    createnewSubTask(false);
   };
 
   return (
@@ -117,8 +146,8 @@ const Tasks = () => {
             Create Task
           </button>
         </form>
-      ):newsubtask?(
-        <form className="max-w-md mx-auto">
+      ) : newsubtask ? (
+        <form className="max-w-md mx-auto" onSubmit={handleSubtaskSubmit}>
           <div className="mb-4">
             <label htmlFor="task_id" className="block text-gray-700 text-sm font-bold mb-2">
               Task ID
@@ -127,8 +156,8 @@ const Tasks = () => {
               type="text"
               id="task_id"
               name="task_id"
-              // value={task.task_id}
-              // onChange={handleChange}
+              value={subtasks.task_id}
+              onChange={handleChangesubTask}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
               required
             />
@@ -142,8 +171,8 @@ const Tasks = () => {
               type="text"
               id="title"
               name="title"
-              // value={task.title}
-              // onChange={handleChange}
+              value={subtasks.title}
+              onChange={handleChangesubTask}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
               required
             />
@@ -173,7 +202,7 @@ const Tasks = () => {
           </button>
         </div>
       )}
-      <TaskList tasks={tasks} setTasks={setTasks}/>
+      <TaskList tasks={tasks} setTasks={setTasks} />
     </div>
   );
 };
