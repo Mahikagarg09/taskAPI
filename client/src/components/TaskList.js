@@ -9,18 +9,18 @@ const TaskList = ({ tasks, setTasks }) => {
     // Fetch tasks with useEffect
     useEffect(() => {
         const fetchTasks = async () => {
-          try {
-            const userId = localStorage.getItem('userId');
-            const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
-            setTasks(response.data);
-            setOriginalTasks(response.data);
-          } catch (error) {
-            console.error(error);
-          }
+            try {
+                const userId = localStorage.getItem('userId');
+                const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
+                setTasks(response.data);
+                setOriginalTasks(response.data);
+            } catch (error) {
+                console.error(error);
+            }
         };
-    
+
         fetchTasks();
-      }, [setTasks]);// Empty dependency array ensures it runs only once on mount
+    }, [setTasks]);// Empty dependency array ensures it runs only once on mount
 
     const handleEditClick = (taskId) => {
         console.log(taskId)
@@ -31,7 +31,7 @@ const TaskList = ({ tasks, setTasks }) => {
         setEditableTaskId(null);
         setTasks(originalTasks);
     };
-    
+
 
     const handleUpdateClick = async (taskId, newDueDate, newStatus) => {
         try {
@@ -39,18 +39,18 @@ const TaskList = ({ tasks, setTasks }) => {
                 due_date: newDueDate,
                 status: newStatus,
             });
-        
+
             // Update the local state with the updated task
             setTasks((prevTasks) =>
                 prevTasks.map((task) => (task._id === taskId ? response.data : task))
             );
-    
+
             setEditableTaskId(null); // Move this line inside the try block
         } catch (error) {
             console.error(error);
         }
     };
-    
+
     const handleDueDateChange = (taskId, newDueDate) => {
         setTasks((prevTasks) =>
             prevTasks.map((task) =>
@@ -58,7 +58,7 @@ const TaskList = ({ tasks, setTasks }) => {
             )
         );
     };
-    
+
     const handleStatusChange = (taskId, newStatus) => {
         setTasks((prevTasks) =>
             prevTasks.map((task) =>
@@ -89,31 +89,31 @@ const TaskList = ({ tasks, setTasks }) => {
                             <td className="py-2 px-4 border-b text-center">{task.title}</td>
                             <td className="py-2 px-4 border-b text-center">{task.description}</td>
                             <td className="py-2 px-4 border-b text-center">
-                            {editableTaskId === task._id ? (
-                                <input
-                                    type="date"
-                                    value={task.due_date}
-                                    onChange={(e) => handleDueDateChange(task._id,e.target.value)}
-                                    className="border border-gray-300 px-2 py-1 rounded-md"
-                                />
-                            ) : (
-                                new Date(task.due_date).toLocaleDateString()
-                            )}
+                                {editableTaskId === task._id ? (
+                                    <input
+                                        type="date"
+                                        value={task.due_date}
+                                        onChange={(e) => handleDueDateChange(task._id, e.target.value)}
+                                        className="border border-gray-300 px-2 py-1 rounded-md"
+                                    />
+                                ) : (
+                                    new Date(task.due_date).toLocaleDateString()
+                                )}
                             </td>
                             <td className="py-2 px-4 border-b text-center">{task.priority}</td>
                             <td className="py-2 px-4 border-b text-center">
-                            {editableTaskId === task._id ? (
-                                <select
-                                    value={task.status}
-                                    onChange={(e) => handleStatusChange(task._id,e.target.value)}
-                                    className="border border-gray-300 px-2 py-1 rounded-md"
-                                >
-                                    <option value="TODO">TODO</option>
-                                    <option value="DONE">DONE</option>
-                                </select>
-                            ) : (
-                                task.status
-                            )}
+                                {editableTaskId === task._id ? (
+                                    <select
+                                        value={task.status}
+                                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                                        className="border border-gray-300 px-2 py-1 rounded-md"
+                                    >
+                                        <option value="TODO">TODO</option>
+                                        <option value="DONE">DONE</option>
+                                    </select>
+                                ) : (
+                                    task.status
+                                )}
                             </td>
                             <td className="py-2 px-4 border-b text-center">
                                 {editableTaskId === task._id ? (
@@ -132,14 +132,28 @@ const TaskList = ({ tasks, setTasks }) => {
                                         </button>
                                     </>
                                 ) : (
-                                    <button
-                                        onClick={() => handleEditClick(task._id)}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 mr-2"
-                                    >
-                                        Update
-                                    </button>
+                                    <>
+                                        <button
+                                            onClick={() => handleEditClick(task._id)}
+                                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 mr-2"
+                                        >
+                                            Update
+                                        </button>
+                                        <button
+                                            // onClick={() => handleDeleteClick(task._id)}
+                                            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300 mr-2"
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            // onClick={() => handleSubtasksClick(task._id)}
+                                            className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring focus:border-yellow-300"
+                                        >
+                                            Subtasks
+                                        </button>
+                                    </>
                                 )}
-                            </td>       
+                            </td>
                         </tr>
                     ))}
                 </tbody>
