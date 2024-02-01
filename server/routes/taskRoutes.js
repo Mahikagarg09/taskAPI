@@ -49,4 +49,33 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/:userId/tasks', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { priority, due_date } = req.query;
+
+    // Build a filter object based on provided parameters
+    const filters = { user: userId };
+    if (priority) {
+      filters.priority = priority;
+    }
+    if (due_date) {
+      filters.due_date = due_date;
+    }
+
+    // Find tasks based on filters
+    const filteredTasks = await Task.find(filters);
+
+    // Check if there are tasks matching the filters
+    if (!filteredTasks || filteredTasks.length === 0) {
+      return res.status(404).json({ message: 'No matching tasks found for the user' });
+    }
+
+    res.json(filteredTasks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
