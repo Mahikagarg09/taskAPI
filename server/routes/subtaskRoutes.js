@@ -4,7 +4,7 @@ const Subtask = require('../models/subtaskModel');
 const Task = require('../models/taskModel');
 const User = require('../models/userModel');
 
-// Create a new subtask
+// ------------------------------------------------Create a new subtask----------------------------------
 router.post('/', async (req, res) => {
   try {
     const { title, task_id} = req.body;
@@ -27,6 +27,8 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+//------------------------------------------FETCH SUBTASK------------------------------------------------------
 
 router.get('/:userId/subtasks', async (req, res) => {
   try {
@@ -58,6 +60,8 @@ router.get('/:userId/subtasks', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+//--------------------------------------UPDATE SUBTASK--------------------------------------------------------
 
 router.put('/:subtaskId', async (req, res) => {
   try {
@@ -94,6 +98,8 @@ router.put('/:subtaskId', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+// -------------------------------------SOFT DELETE-------------------------------------------------------
 
 router.delete('/:subtaskId', async (req, res) => {
   try {
