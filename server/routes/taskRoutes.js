@@ -7,11 +7,13 @@ const client = require('twilio')(accountSid, authToken);
 const Task = require('../models/taskModel');
 const Subtask = require('../models/subtaskModel');
 const User = require('../models/userModel');
+const phone=process.env.PHONE
 
-// Define your task routes here
+//----------------------------------CREATE TASK-------------------------------------------------------
+
 router.post('/', async (req, res) => {
   try {
-    const {task_id, title,description, due_date, userId } = req.body;
+    const { task_id, title, description, due_date, userId } = req.body;
 
     // Check if the user exists
     const user = await User.findById(userId);
@@ -39,11 +41,11 @@ router.post('/', async (req, res) => {
     }
 
     const newTask = new Task({
-      task_id : task_id,
+      task_id: task_id,
       title,
       description,
-      due_date: dueDate, 
-      user: userId, 
+      due_date: dueDate,
+      user: userId,
       priority,
     });
 
@@ -55,13 +57,14 @@ router.post('/', async (req, res) => {
   }
 });
 
+//--------------------------------------FETCH ALL TASKS------------------------------------------------------
 router.get('/:userId/tasks', async (req, res) => {
   try {
     const userId = req.params.userId;
     const { priority, due_date } = req.query;
 
     // Build a filter object based on provided parameters
-    const filters = { user: userId , deleted_at: null  };
+    const filters = { user: userId, deleted_at: null };
     if (priority) {
       filters.priority = priority;
     }
@@ -84,13 +87,14 @@ router.get('/:userId/tasks', async (req, res) => {
   }
 });
 
+//-------------------------------------UPDATE TASK--------------------------------------------------------
 router.put('/:taskId', async (req, res) => {
   try {
     const taskId = req.params.taskId;
     const { due_date, status } = req.body;
 
     // Check if the task exists
-    const task =  await Task.findOne({ task_id: taskId });
+    const task = await Task.findOne({ task_id: taskId });
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
@@ -134,6 +138,8 @@ router.put('/:taskId', async (req, res) => {
   }
 });
 
+//----------------------------------------SOFT DELETE----------------------------------------------------
+
 router.delete('/:taskId', async (req, res) => {
   const { taskId } = req.params;
 
@@ -155,46 +161,58 @@ router.delete('/:taskId', async (req, res) => {
   }
 });
 
+//-----------------------CALL-----------------------------------------------------------------------
+async function initiateCall(user) {
+  try {
+    const call = await client.calls.create({
+      url: 'http://demo.twilio.com/docs/voice.xml',
+      to: user.phone,
+      // from: phone, // Your Twilio phone number
+    });
+
+    console.log(`Call initiated to ${user.email}, SID: ${call.sid}`);
+  } catch (error) {
+    console.error(`Error initiating call to ${user.email}: ${error.message}`);
+  }
+}
+
+//----------------------------------CRON SCHEDULE------------------------------------------------------------
 cron.schedule('* * * * *', async () => {
   try {
-    // Get tasks that have passed their due date and are not done
+    console.log('Cron job started');
+
+    const now = new Date();
+
+    // Find overdue tasks with status not "DONE"
     const overdueTasks = await Task.find({
-      due_date: { $lt: new Date() },
+      due_date: { $lt: now },
       status: { $ne: 'DONE' },
-    }).populate('user');
+    }).sort({ priority: 1 }); // Sort by priority ascending
 
-    // Iterate over overdue tasks and make calls based on priority
+    console.log(`Found ${overdueTasks.length} overdue tasks`);
+
+    // Iterate through overdue tasks and initiate calls
     for (const task of overdueTasks) {
-      const usersWithSameOrHigherPriority = await User.find({
-        priority: { $lte: task.user.priority },
-      }).sort('priority');
+      const user = await User.findById(task.user);
 
-      for (const user of usersWithSameOrHigherPriority) {
-        // Make a call to the user
-        try {
-          const call = await client.calls.create({
-            url: 'http://demo.twilio.com/docs/voice.xml', // Replace with your TwiML URL
-            to: user.phone,
-            from: '+15552223214', // Your Twilio phone number
-          });
-          console.log(`Call SID: ${call.sid}`);
-          break; // Break the loop if the call is successful
-        } catch (error) {
-          // Log the error and continue to the next user
-          console.error(`Error making call to ${user.phone}: ${error.message}`);
-        }
+      // Check if the user has a valid phone number
+      if (user && user.phone) {
+        console.log(`Initiating call for user: ${user.email}`);
+        await initiateCall(user);
+      } else {
+        console.log(`User ${user.email} does not have a valid phone number. Skipping call.`);
       }
+
+      // Update the task status to indicate that a call has been attempted
+      await Task.findByIdAndUpdate(task._id, { status: 'IN_PROGRESS' });
+      console.log(`Task status updated for task ID ${task.task_id}`);
     }
+
+    console.log('Cron job completed');
   } catch (error) {
     console.error(`Cron job error: ${error.message}`);
   }
 });
-
-// Start the cron job
-cron.start();
-
-// Ensure that the process does not exit immediately
-process.stdin.resume();
 
 module.exports = router;
 
