@@ -9,7 +9,7 @@ router.post('/', async (req, res) => {
     const { title, task_id} = req.body;
 
     // Check if the referenced task exists
-    const existingTask = await Task.findById(task_id);
+    const existingTask = await Task.findOne({ task_id: task_id });
     if (!existingTask) {
       return res.status(404).json({ message: 'Task not found' });
     }
