@@ -110,7 +110,7 @@ router.put('/:taskId', async (req, res) => {
     } else {
       task.priority = 3; // Due date is 5+ days from now
     }
-
+    task.updated_at = new Date();
     const updatedTask = await task.save();
 
     // If the status is changed to "DONE," update subtasks' status to 1
