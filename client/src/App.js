@@ -9,7 +9,7 @@ const App = () => {
     <div>
       <Router>
         <Routes>
-          <Auth/>
+          <Route path="/" element={<Auth/>}/>
         </Routes>
       </Router>
     </div>

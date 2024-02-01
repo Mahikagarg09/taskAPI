@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
-    const navigate= useNavigate();
+    const navigate = useNavigate();
     const [showSignUp, setShowSignUp] = useState(false);
     const [message, setMessage] = useState(null);
     const [formData, setFormData] = useState({
@@ -23,6 +23,27 @@ export default function Auth() {
     const handleSignUpToggle = () => {
         setShowSignUp(!showSignUp);
         setMessage(null);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const url = showSignUp ? 'http://localhost:3000/api/auth/register' : 'http://localhost:3000/api/auth/login';
+
+        try {
+            const response = await axios.post(url, formData);
+            const data = response.data;
+            if (response.status === 200 || response.status === 201) {
+                setMessage(data.message);
+                // Clear form data after successful submission
+                setFormData({ email: '', password: '', phone: '' });
+            } else {
+                setMessage(data.message);
+            }
+        } catch (error) {
+            console.error('An unexpected error occurred:', error);
+            setMessage('An unexpected error occurred. Please try again.');
+        }
     };
 
 
