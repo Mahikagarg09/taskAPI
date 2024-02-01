@@ -7,7 +7,7 @@ const User = require('../models/userModel');
 // Define your task routes here
 router.post('/', async (req, res) => {
   try {
-    const {task_id, title, due_date, userId } = req.body;
+    const {task_id, title,description, due_date, userId } = req.body;
 
     // Check if the user exists
     const user = await User.findById(userId);
@@ -35,11 +35,12 @@ router.post('/', async (req, res) => {
     }
 
     const newTask = new Task({
-      task_id,
+      task_id : task_id,
       title,
-      due_date: dueDate, // Use the converted dueDate
+      description,
+      due_date: dueDate, 
+      user: userId, 
       priority,
-      user: userId, // Assign the user ID to the task
     });
 
     const savedTask = await newTask.save();
