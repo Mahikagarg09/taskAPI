@@ -84,5 +84,24 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/', (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    // If no token, redirect to the login page
+    res.status(401).json({message:"token not present"})
+  }
+  // Verify the token
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      // If token verification fails, redirect to the login page
+      res.status(401).json({message:"token not verfied"})
+    }
+    // Token is valid, you can proceed with rendering the main route or performing other actions
+    // For example, you can extract user information from the decoded token
+    const userEmail = decoded.user.email;
+    // Render or send a response for authenticated users
+    res.send(`Welcome, ${userEmail}! This is the main route.`);
+  });
+});
 
 module.exports = router;

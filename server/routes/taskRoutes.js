@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const cron = require('node-cron');
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
 const Task = require('../models/taskModel');
 const Subtask = require('../models/subtaskModel');
 const User = require('../models/userModel');
@@ -151,6 +155,47 @@ router.delete('/:taskId', async (req, res) => {
   }
 });
 
-module.exports = router;
+cron.schedule('* * * * *', async () => {
+  try {
+    // Get tasks that have passed their due date and are not done
+    const overdueTasks = await Task.find({
+      due_date: { $lt: new Date() },
+      status: { $ne: 'DONE' },
+    }).populate('user');
+
+    // Iterate over overdue tasks and make calls based on priority
+    for (const task of overdueTasks) {
+      const usersWithSameOrHigherPriority = await User.find({
+        priority: { $lte: task.user.priority },
+      }).sort('priority');
+
+      for (const user of usersWithSameOrHigherPriority) {
+        // Make a call to the user
+        try {
+          const call = await client.calls.create({
+            url: 'http://demo.twilio.com/docs/voice.xml', // Replace with your TwiML URL
+            to: user.phone,
+            from: '+15552223214', // Your Twilio phone number
+          });
+          console.log(`Call SID: ${call.sid}`);
+          break; // Break the loop if the call is successful
+        } catch (error) {
+          // Log the error and continue to the next user
+          console.error(`Error making call to ${user.phone}: ${error.message}`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Cron job error: ${error.message}`);
+  }
+});
+
+// Start the cron job
+cron.start();
+
+// Ensure that the process does not exit immediately
+process.stdin.resume();
 
 module.exports = router;
+
+
