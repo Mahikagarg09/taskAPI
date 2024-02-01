@@ -92,15 +92,17 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate JWT token
+    // Inside your server-side login route
     jwt.sign({ user }, secretKey, { expiresIn: '1h' }, (err, token) => {
       if (err) {
-        res.sendStatus(500);
+        res.status(500).json({ message: 'Internal Server Error' });
       } else {
         // Set the token in the response header
         res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
-        res.json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', token });
       }
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });

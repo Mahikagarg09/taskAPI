@@ -35,14 +35,16 @@ export default function Auth() {
 
             const data = response.data;
 
-            if (response.status === 200 || response.status === 201) {
+            if (response.status === 200) {
+                console.log('Token received:', data.token);
                 setMessage(data.message);
                 // Clear form data after successful submission
                 setFormData({ email: '', password: '', phone: '' });
-                navigate("/")
+                navigate("/");
             } else {
                 setMessage(data.message);
             }
+            
         } catch (error) {
             console.error('An unexpected error occurred:', error);
             setMessage('An unexpected error occurred. Please try again.');
