@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const TaskList = () => {
     const [editableTaskId, setEditableTaskId] = useState(null);
+    const [originalTasks, setOriginalTasks] = useState([]);
     const [tasks, setTasks] = useState([]);
 
     // Fetch tasks with useEffect
@@ -13,6 +14,7 @@ const TaskList = () => {
                 const userId = localStorage.getItem('userId');
                 const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
                 setTasks(response.data);
+                setOriginalTasks(response.data);
             } catch (error) {
                 console.error(error);
             }
@@ -22,12 +24,15 @@ const TaskList = () => {
     }, []); // Empty dependency array ensures it runs only once on mount
 
     const handleEditClick = (taskId) => {
+        console.log(taskId)
         setEditableTaskId(taskId);
     };
 
     const handleCancelClick = () => {
         setEditableTaskId(null);
+        setTasks(originalTasks);
     };
+    
 
     const handleUpdateClick = async (taskId, newDueDate, newStatus) => {
         try {
@@ -115,7 +120,7 @@ const TaskList = () => {
                                 {editableTaskId === task._id ? (
                                     <>
                                         <button
-                                            onClick={() => handleUpdateClick(task._id, task.due_date, task.status)}
+                                            onClick={() => handleUpdateClick(task.task_id, task.due_date, task.status)}
                                             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-300 mr-2"
                                         >
                                             Done
