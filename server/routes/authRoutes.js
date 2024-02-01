@@ -50,14 +50,14 @@ router.get('/', (req, res) => {
 
   if (!token) {
     // If no token, redirect to the login page
-    return res.redirect("/auth");
+    res.status(401).json({message:"token not present"})
   }
 
   // Verify the token
   jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
       // If token verification fails, redirect to the login page
-      return res.redirect("/auth");
+      res.status(401).json({message:"token not verfied"})
     }
 
     // Token is valid, you can proceed with rendering the main route or performing other actions
@@ -69,15 +69,6 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/login', (req, res) => {
-  const token = req.cookies.token;
-  if (token) {
-    return res.redirect('/');
-  }
-
-  // Render your login form or any login-related content
-  res.end();
-});
 
 
 router.post('/login', async (req, res) => {

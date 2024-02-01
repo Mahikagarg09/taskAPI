@@ -25,32 +25,6 @@ export default function Auth() {
         setMessage(null);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const url = showSignUp ? 'http://localhost:3000/api/auth/register' : 'http://localhost:3000/api/auth/login';
-
-        try {
-            const response = await axios.post(url, formData);
-
-            const data = response.data;
-
-            if (response.status === 200) {
-                console.log('Token received:', data.token);
-                setMessage(data.message);
-                // Clear form data after successful submission
-                setFormData({ email: '', password: '', phone: '' });
-                navigate("/");
-            } else {
-                setMessage(data.message);
-            }
-            
-        } catch (error) {
-            console.error('An unexpected error occurred:', error);
-            setMessage('An unexpected error occurred. Please try again.');
-        }
-    };
-
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8">
