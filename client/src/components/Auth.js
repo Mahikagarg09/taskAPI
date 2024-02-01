@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
+    const navigate= useNavigate();
     const [showSignUp, setShowSignUp] = useState(false);
     const [message, setMessage] = useState(null);
     const [formData, setFormData] = useState({
@@ -37,6 +39,7 @@ export default function Auth() {
                 setMessage(data.message);
                 // Clear form data after successful submission
                 setFormData({ email: '', password: '', phone: '' });
+                navigate("/")
             } else {
                 setMessage(data.message);
             }
