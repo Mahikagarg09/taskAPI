@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/taskModel');
+const Subtask = require('../models/subtaskModel');
 const User = require('../models/userModel');
 
 // Define your task routes here
@@ -72,6 +73,39 @@ router.get('/:userId/tasks', async (req, res) => {
     }
 
     res.json(filteredTasks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+router.put('/:taskId', async (req, res) => {
+  try {
+    const taskId = req.params.taskId;
+    const { due_date, status } = req.body;
+
+    // Check if the task exists
+    const task =  await Task.findOne({ task_id: taskId });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Update task due_date and status
+    task.due_date = due_date || task.due_date; // Update due_date if provided
+    task.status = status || task.status; // Update status if provided
+    const updatedTask = await task.save();
+
+    // If the status is changed to "DONE," update subtasks' status to 1
+    if (status === 'DONE') {
+      await Subtask.updateMany({ task_id: taskId }, { status: 1 });
+    }
+
+    // If the status is changed to "TODO," update subtasks' status to 0
+    if (status === 'TODO') {
+      await Subtask.updateMany({ task_id: taskId }, { status: 0 });
+    }
+
+    res.json(updatedTask);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
