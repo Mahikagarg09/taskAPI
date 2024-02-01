@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios'
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -11,10 +12,21 @@ const Auth = () => {
     setIsSignUp(!isSignUp);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform authentication logic here (e.g., API calls, validation)
-    console.log(`Email: ${email}, Password: ${password}, Phone: ${phone}, Mode: ${isSignUp ? 'Sign Up' : 'Login'}`);
+
+    try {
+      const apiUrl = isSignUp ? 'https://localhost:3000/api/auth/register' : 'https://localhost:3000/api/auth/login';
+      const response = await axios.post(apiUrl, { email, password, phone });
+      
+      // Handle successful response, e.g., redirect to a new page or update state
+      console.log(response.data);
+
+    } catch (error) {
+      // Handle error, e.g., display an error message
+      console.error(error);
+    }
+
     // Reset form fields after submission
     setEmail('');
     setPassword('');
