@@ -40,7 +40,7 @@ const TaskList = () => {
                 due_date: newDueDate,
                 status: newStatus,
             });
-    
+        
             // Update the local state with the updated task
             setTasks((prevTasks) =>
                 prevTasks.map((task) => (task._id === taskId ? response.data : task))

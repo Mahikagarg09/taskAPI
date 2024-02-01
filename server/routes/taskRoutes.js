@@ -94,6 +94,23 @@ router.put('/:taskId', async (req, res) => {
     // Update task due_date and status
     task.due_date = due_date || task.due_date; // Update due_date if provided
     task.status = status || task.status; // Update status if provided
+
+    // Calculate priority based on the new due date
+    const currentDate = new Date();
+    const dueDate = new Date(task.due_date);
+    const timeDifference = dueDate.getTime() - currentDate.getTime();
+    const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+    if (daysDifference === 0) {
+      task.priority = 0; // Due date is today
+    } else if (daysDifference <= 2) {
+      task.priority = 1; // Due date is between tomorrow and day after tomorrow
+    } else if (daysDifference <= 4) {
+      task.priority = 2; // Due date is between 3 and 4 days from now
+    } else {
+      task.priority = 3; // Due date is 5+ days from now
+    }
+    
     const updatedTask = await task.save();
 
     // If the status is changed to "DONE," update subtasks' status to 1

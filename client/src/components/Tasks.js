@@ -1,5 +1,5 @@
 // Tasks.js
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import axios from 'axios';
 import TaskList from './TaskList';
 
@@ -11,42 +11,6 @@ const Tasks = () => {
     description: '',
     due_date: '',
   });
-
-  // const [tasks, setTasks] = useState([]);
-
-  // const fetchTasks = async () => {
-  //   try {
-  //     const userId = localStorage.getItem('userId');
-  //     const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
-  //     setTasks(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // const handleUpdate = async (taskId, currentDueDate, currentStatus) => {
-  //   const newDueDate = prompt('Enter new due date:', currentDueDate) || currentDueDate;
-  //   const newStatus = prompt('Enter new status:', currentStatus) || currentStatus;
-
-  //   try {
-  //     const response = await axios.put(`http://localhost:3000/api/tasks/${taskId}`, {
-  //       due_date: newDueDate,
-  //       status: newStatus,
-  //     });
-
-  //     // Update the local state with the updated task
-  //     setTasks((prevTasks) =>
-  //       prevTasks.map((task) => (task._id === taskId ? response.data : task))
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-
-  // useEffect(() => {
-  //   fetchTasks();
-  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
