@@ -80,7 +80,7 @@ router.post('/login', async (req, res) => {
         res.sendStatus(500);
       } else {
         res.cookie('token', token, { maxAge: 3600000, httpOnly: true })
-        return res.redirect("/");
+        res.json({ message: 'Login successful', token });
       }
     });
   } catch (error) {
