@@ -65,5 +65,42 @@ router.get('/:userId/subtasks', async (req, res) => {
   }
 });
 
+router.put('/:subtaskId', async (req, res) => {
+  try {
+    const subtaskId = req.params.subtaskId;
+    const { status } = req.body;
+
+    // Check if the subtask exists
+    const subtask = await Subtask.findById(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({ message: 'Subtask not found' });
+    }
+
+    // Check the task_id for the subtask
+    const task = await Task.findOne({ task_id: subtask.task_id });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Update subtask status
+    subtask.status = status;
+    subtask.updated_at = new Date();
+    const updatedSubtask = await subtask.save();
+
+    // Check if the task was previously in "TODO" status
+    if (task.status === 'TODO') {
+      // Update the task status to "IN_PROGRESS"
+      task.status = 'IN_PROGRESS';
+      await task.save();
+    }
+
+    res.json(updatedSubtask);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+module.exports = router;
 
 module.exports = router;
