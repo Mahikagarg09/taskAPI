@@ -6,7 +6,9 @@ import SubTasks from './SubTasks';
 const TaskList = ({ tasks, setTasks }) => {
     const [editableTaskId, setEditableTaskId] = useState(null);
     const [originalTasks, setOriginalTasks] = useState([]);
-    const[showSubtask,setShowSubtask]=useState(null)
+    const [showSubtask, setShowSubtask] = useState(null)
+    const [dueDateFilter, setDueDateFilter] = useState('');
+    const [priorityFilter, setPriorityFilter] = useState('');
 
     // Fetch tasks with useEffect
     useEffect(() => {
@@ -68,7 +70,7 @@ const TaskList = ({ tasks, setTasks }) => {
             )
         );
     };
-    
+
     const handleDeleteClick = async (taskId) => {
         try {
             // Make a DELETE request to delete the task on the server
@@ -88,6 +90,30 @@ const TaskList = ({ tasks, setTasks }) => {
     return (
         <div className="container mx-auto my-8 px-10">
             <h2 className="text-2xl font-bold mb-4">All Tasks</h2>
+            <div className="flex space-x-4 mb-4">
+                <div className="flex items-center space-x-2">
+                    <span>Filter by Due Date:</span>
+                    <input
+                        type="date"
+                        value={dueDateFilter}
+                        onChange={(e) => setDueDateFilter(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 rounded-md"
+                    />
+                </div>
+                <div className="flex items-center space-x-2">
+                    <span>Filter by Priority:</span>
+                    <select
+                        value={priorityFilter}
+                        onChange={(e) => setPriorityFilter(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 rounded-md"
+                    >
+                        <option value="">All Priorities</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+            </div>
             <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr>
@@ -176,8 +202,8 @@ const TaskList = ({ tasks, setTasks }) => {
                     ))}
                 </tbody>
             </table>
-            {showSubtask &&  <SubTasks taskId={showSubtask}/>}
-        </div>
+            {showSubtask && <SubTasks taskId={showSubtask} />}
+        </div >
     )
 };
 
