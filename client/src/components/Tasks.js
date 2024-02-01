@@ -12,41 +12,41 @@ const Tasks = () => {
     due_date: '',
   });
 
-  const [tasks, setTasks] = useState([]);
+  // const [tasks, setTasks] = useState([]);
 
-  const fetchTasks = async () => {
-    try {
-      const userId = localStorage.getItem('userId');
-      const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
-      setTasks(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const fetchTasks = async () => {
+  //   try {
+  //     const userId = localStorage.getItem('userId');
+  //     const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`);
+  //     setTasks(response.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const handleUpdate = async (taskId, currentDueDate, currentStatus) => {
-    const newDueDate = prompt('Enter new due date:', currentDueDate) || currentDueDate;
-    const newStatus = prompt('Enter new status:', currentStatus) || currentStatus;
+  // const handleUpdate = async (taskId, currentDueDate, currentStatus) => {
+  //   const newDueDate = prompt('Enter new due date:', currentDueDate) || currentDueDate;
+  //   const newStatus = prompt('Enter new status:', currentStatus) || currentStatus;
 
-    try {
-      const response = await axios.put(`http://localhost:3000/api/tasks/${taskId}`, {
-        due_date: newDueDate,
-        status: newStatus,
-      });
+  //   try {
+  //     const response = await axios.put(`http://localhost:3000/api/tasks/${taskId}`, {
+  //       due_date: newDueDate,
+  //       status: newStatus,
+  //     });
 
-      // Update the local state with the updated task
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => (task._id === taskId ? response.data : task))
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     // Update the local state with the updated task
+  //     setTasks((prevTasks) =>
+  //       prevTasks.map((task) => (task._id === taskId ? response.data : task))
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  // useEffect(() => {
+  //   fetchTasks();
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +66,7 @@ const Tasks = () => {
       const response = await axios.post('http://localhost:3000/api/tasks', taskWithUserId);
       console.log('Task submitted:', response.data);
 
-      setTasks((prevTasks) => [...prevTasks, response.data]);
+      // setTasks((prevTasks) => [...prevTasks, response.data]);
     } catch (error) {
       console.error(error);
     }
@@ -160,7 +160,7 @@ const Tasks = () => {
           </button>
         </div>
       )}
-      <TaskList tasks={tasks} onUpdate={handleUpdate} />
+      <TaskList />
     </div>
   );
 };
