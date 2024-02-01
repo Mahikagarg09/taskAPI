@@ -34,6 +34,7 @@ export default function Auth({setAuthenticated}) {
             if (response.status === 200 || response.status === 201) {
                 setMessage(data.message);
                 setAuthenticated(true);
+                localStorage.setItem("token",data.token)
                 // Clear form data after successful submission
                 setFormData({ email: '', password: '', phone: '' });
             } else {

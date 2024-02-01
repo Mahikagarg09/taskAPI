@@ -5,7 +5,7 @@ import Tasks from './components/Tasks';
 
 const App = () => {
 
-  const[authenticated,setAuthenticated] = useState(false);
+  const[authenticated,setAuthenticated] = useState(localStorage.getItem('token'));
 
   return (
     <div>
