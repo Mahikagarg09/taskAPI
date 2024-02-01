@@ -1,3 +1,118 @@
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const jwt = require('jsonwebtoken');
+// const cookieParser = require('cookie-parser');
+// const User = require('../models/userModel'); // Import the User model
+// const Task = require('../models/taskModel');
+
+// const secretKey = "secret";
+
+// const router = express.Router();
+
+// router.use(express.json());
+// router.use(express.urlencoded({ extended: true }));
+// router.use(cookieParser());
+
+// router.get('/', (req, res) => {
+//   if (!req.cookies.token) {
+//     return res.redirect("/auth");
+//   }
+// //   res.setHeader("Content-type", "text/HTML");
+// //   res.write("<a href='/protected'><button>Protected</button></a>")
+//   res.end();
+// });
+
+// router.get('/login', (req, res) => {
+//   const token = req.cookies.token;
+//   if (token) {
+//     return res.redirect('/');
+//   }
+
+// //   res.setHeader('Content-Type', 'text/HTML');
+// //   res.write(`<h1>Login</h1>
+// //     <form method="post" action="/login">
+// //       <input type="text" name="email" placeholder="Email"/> </br> 
+// //       <input type="password" name="password" placeholder="Password"/> </br>
+// //       <button type="submit">Login</button>
+// //     </form>`);
+//   res.end();
+// });
+
+// router.post('/register', async (req, res) => {
+//   try {
+//     const { email, password, phone } = req.body;
+
+//     // Check if user already exists
+//     const existingUser = await User.findOne({ email });
+
+//     if (existingUser) {
+//       return res.status(400).json({ message: 'User already exists' });
+//     }
+
+//     // Calculate priority based on existing users
+//     const usersCount = await User.countDocuments();
+//     const priority = usersCount + 1;
+
+//     // Create a new user with priority
+//     const newUser = new User({
+//       email,
+//       password,
+//       phone,
+//       priority,
+//     });
+
+//     await newUser.save();
+
+//     res.status(201).json({ message: 'User registered successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// });
+// router.post('/login', async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Find the user by email
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(401).json({ message: 'Invalid credentials' });
+//     }
+
+//     // Generate JWT token
+//     jwt.sign({ user }, secretKey, { expiresIn: '1h' }, (err, token) => {
+//       if (err) {
+//         res.sendStatus(500);
+//       } else {
+//         res.cookie('token', token, { maxAge: 3600000, httpOnly: true })
+//         res.json({ message: 'Login successful', token });
+//       }
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// });
+
+// // router.get('/protected', (req, res) => {
+// //   const token = req.cookies.token;
+// //   if (!token) {
+// //     return res.redirect('/login');
+// //   }
+
+// //   jwt.verify(token, secretKey, (err, decoded) => {
+// //     if (err) {
+// //       return res.sendStatus(401);
+// //     }
+
+// //     const userEmail = decoded.user.email;
+// //     res.send(`Welcome, ${userEmail}! This is a protected route.`);
+// //   });
+// // });
+
+// module.exports = router;
+
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -14,12 +129,27 @@ router.use(express.urlencoded({ extended: true }));
 router.use(cookieParser());
 
 router.get('/', (req, res) => {
-  if (!req.cookies.token) {
+  const token = req.cookies.token;
+
+  if (!token) {
+    // If no token, redirect to the login page
     return res.redirect("/auth");
   }
-//   res.setHeader("Content-type", "text/HTML");
-//   res.write("<a href='/protected'><button>Protected</button></a>")
-  res.end();
+
+  // Verify the token
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      // If token verification fails, redirect to the login page
+      return res.redirect("/auth");
+    }
+
+    // Token is valid, you can proceed with rendering the main route or performing other actions
+    // For example, you can extract user information from the decoded token
+    const userEmail = decoded.user.email;
+
+    // Render or send a response for authenticated users
+    res.send(`Welcome, ${userEmail}! This is the main route.`);
+  });
 });
 
 router.get('/login', (req, res) => {
@@ -28,13 +158,7 @@ router.get('/login', (req, res) => {
     return res.redirect('/');
   }
 
-//   res.setHeader('Content-Type', 'text/HTML');
-//   res.write(`<h1>Login</h1>
-//     <form method="post" action="/login">
-//       <input type="text" name="email" placeholder="Email"/> </br> 
-//       <input type="password" name="password" placeholder="Password"/> </br>
-//       <button type="submit">Login</button>
-//     </form>`);
+  // Render your login form or any login-related content
   res.end();
 });
 
@@ -69,6 +193,7 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -87,6 +212,7 @@ router.post('/login', async (req, res) => {
       } else {
         res.cookie('token', token, { maxAge: 3600000, httpOnly: true })
         res.json({ message: 'Login successful', token });
+        res.redirect("/");
       }
     });
   } catch (error) {
@@ -94,21 +220,5 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
-// router.get('/protected', (req, res) => {
-//   const token = req.cookies.token;
-//   if (!token) {
-//     return res.redirect('/login');
-//   }
-
-//   jwt.verify(token, secretKey, (err, decoded) => {
-//     if (err) {
-//       return res.sendStatus(401);
-//     }
-
-//     const userEmail = decoded.user.email;
-//     res.send(`Welcome, ${userEmail}! This is a protected route.`);
-//   });
-// });
 
 module.exports = router;
