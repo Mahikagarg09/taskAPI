@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 // // Routes
 const authRoute = require("./routes/authRoutes")
 const taskRoute = require("./routes/taskRoutes")
+const subtaskRoute= require("./routes/subtaskRoutes")
 
 // Connect to MongoDB
 mongoose.connect("mongodb+srv://mahikagarg23:TpTyPJiuKu23h0KJ@cluster0.qtsb9h6.mongodb.net/?retryWrites=true&w=majority")
@@ -23,6 +24,7 @@ mongoose.connect("mongodb+srv://mahikagarg23:TpTyPJiuKu23h0KJ@cluster0.qtsb9h6.m
 
 app.use("/api/auth", authRoute);
 app.use("/api/tasks", taskRoute);
+app.use("/api/subtasks",subtaskRoute);
 
 //add port and connect to server
 app.listen(PORT,() => console.log("server connected"));
