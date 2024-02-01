@@ -13,16 +13,16 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // // Routes
-// app.use('/api/tasks', require('./routes/taskRoutes'));
-// app.use('/api/subtasks', require('./routes/subtaskRoutes'));
 const authRoute = require("./routes/authRoutes")
-// Connect to MongoDB
+const taskRoute = require("./routes/taskRoutes")
 
+// Connect to MongoDB
 mongoose.connect("mongodb+srv://mahikagarg23:TpTyPJiuKu23h0KJ@cluster0.qtsb9h6.mongodb.net/?retryWrites=true&w=majority")
 .then(()=> console.log("Database connected"))
 .catch(err => console.log(err));
 
 app.use("/api/auth", authRoute);
+app.use("/api/tasks", taskRoute);
 
 //add port and connect to server
 app.listen(PORT,() => console.log("server connected"));
