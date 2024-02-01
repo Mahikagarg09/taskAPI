@@ -42,11 +42,14 @@ const TaskList = ({ tasks, setTasks }) => {
                 const response = await axios.get(`http://localhost:3000/api/tasks/${userId}/tasks`, {
                     params: queryParams,
                 });
+                // Matching tasks found, update the state with the fetched tasks
+                const fetchedTasks = response.data;
+                setTasks(fetchedTasks);
+                setOriginalTasks(fetchedTasks);
 
-                setTasks(response.data);
-                setOriginalTasks(response.data);
             } catch (error) {
-                console.error(error);
+                setTasks([]);
+                setOriginalTasks([]);
             }
         };
 
@@ -141,6 +144,7 @@ const TaskList = ({ tasks, setTasks }) => {
                     </select>
                 </div>
             </div>
+            {tasks.length === 0 && (<p className="text-center text-base text-gray-700 mt-4">No tasks available</p>)}
             <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr>

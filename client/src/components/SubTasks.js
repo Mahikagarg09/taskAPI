@@ -142,6 +142,7 @@ const SubTasks = ({ taskId }) => {
                     ))}
                 </tbody>
             </table>
+            {subtasks.length === 0 && (<p className="text-center text-gray-500 mt-4">No subtasks available.</p>)}
         </div>
     );
 };
