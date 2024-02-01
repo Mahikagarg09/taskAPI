@@ -63,30 +63,12 @@ router.post('/register', async (req, res) => {
 
     await newUser.save();
 
-    // Create a tasks database for the new user
-    const tasksDBName = `${newUser._id}tasks`;
-    const tasksDB = mongoose.createConnection(`mongodb://localhost/${tasksDBName}`, { useNewUrlParser: true });
-
-    // Create a task for the user (just an example)
-    const newTask = new Task({
-      title: 'Example Task',
-      description: 'This is an example task.',
-      due_date: new Date(),
-      priority: 1,
-    });
-
-    // Save the task to the tasks database
-    await newTask.save();
-    newUser.tasks.push(newTask._id);
-    await newUser.save();
-
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
