@@ -5,6 +5,7 @@ import TaskList from './TaskList';
 
 const Tasks = () => {
   const [newtask, createnewTask] = useState(false);
+  const[newsubtask, createnewSubTask] = useState(false);
   const [tasks, setTasks] = useState([]);
 
   const [task, setTask] = useState({
@@ -116,6 +117,44 @@ const Tasks = () => {
             Create Task
           </button>
         </form>
+      ):newsubtask?(
+        <form className="max-w-md mx-auto">
+          <div className="mb-4">
+            <label htmlFor="task_id" className="block text-gray-700 text-sm font-bold mb-2">
+              Task ID
+            </label>
+            <input
+              type="text"
+              id="task_id"
+              name="task_id"
+              // value={task.task_id}
+              // onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              // value={task.title}
+              // onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+          >
+            Create subTask
+          </button>
+        </form>
       ) : (
         <div className='flex items-center justify-center mt-20'>
           <button
@@ -124,6 +163,13 @@ const Tasks = () => {
             onClick={() => createnewTask(true)}
           >
             Create new Task
+          </button>
+          <button
+            type="click"
+            className="bg-black text-white px-6 py-4 m-2 text-lg rounded-md hover:bg-gray-600 focus:outline-none focus:ring focus:border-blue-300"
+            onClick={() => createnewSubTask(true)}
+          >
+            Create new SubTask
           </button>
         </div>
       )}
