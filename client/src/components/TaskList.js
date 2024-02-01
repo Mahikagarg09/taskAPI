@@ -1,10 +1,12 @@
 // TaskList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import SubTasks from './SubTasks';
 
 const TaskList = ({ tasks, setTasks }) => {
     const [editableTaskId, setEditableTaskId] = useState(null);
     const [originalTasks, setOriginalTasks] = useState([]);
+    const[showSubtask,setShowSubtask]=useState(null)
 
     // Fetch tasks with useEffect
     useEffect(() => {
@@ -162,7 +164,7 @@ const TaskList = ({ tasks, setTasks }) => {
                                             Delete
                                         </button>
                                         <button
-                                            // onClick={() => handleSubtasksClick(task._id)}
+                                            onClick={() => setShowSubtask(task.task_id)}
                                             className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring focus:border-yellow-300"
                                         >
                                             Subtasks
@@ -174,6 +176,7 @@ const TaskList = ({ tasks, setTasks }) => {
                     ))}
                 </tbody>
             </table>
+            {showSubtask &&  <SubTasks taskId={showSubtask}/>}
         </div>
     )
 };

@@ -49,16 +49,16 @@ router.get('/:userId/subtasks', async (req, res) => {
     }
 
     // Fetch subtasks for each task
-    const allSubtasks = [];
+    // const allSubtasks = [];
     for (const task of tasks) {
       const subtasks = await Subtask.find({ task_id: task.task_id });
-      allSubtasks.push({
-        task_id: task.task_id,
-        subtasks,
-      });
+      // allSubtasks.push(
+      //   subtasks,
+      // );
+      res.json(subtasks);
     }
 
-    res.json(allSubtasks);
+    // res.json(subtasks);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
