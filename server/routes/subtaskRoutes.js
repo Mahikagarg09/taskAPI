@@ -7,7 +7,7 @@ const User = require('../models/userModel');
 // ------------------------------------------------Create a new subtask----------------------------------
 router.post('/', async (req, res) => {
   try {
-    const { title, task_id} = req.body;
+    const { title, task_id } = req.body;
 
     // Check if the referenced task exists
     const existingTask = await Task.findOne({ task_id: task_id });
@@ -48,17 +48,24 @@ router.get('/:userId/subtasks', async (req, res) => {
       // Otherwise, fetch all tasks for the user
       tasks = await Task.find({ user: userId });
     }
+    let subtasks = [];
+
     for (const task of tasks) {
-      const filters ={deleted_at: null, task_id: task.task_id}
+      const filters = { deleted_at: null, task_id: task.task_id }
       const filteredTasks = await Subtask.find(filters);
-      res.json(filteredTasks);
+      subtasks = subtasks.concat(filteredTasks);
     }
+
+    res.json(subtasks);
 
     // res.json(subtasks);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
+
+
+
 });
 
 //--------------------------------------UPDATE SUBTASK--------------------------------------------------------
